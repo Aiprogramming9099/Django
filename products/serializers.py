@@ -1,0 +1,26 @@
+from rest_framework import serializers
+
+from .models import Category,Product,File
+
+
+class CategorySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('id','title','description','avatar','url')
+    
+
+class FileSerializer(serializers.ModelSerializer):
+    file_type = serializers.SerializerMethodField()
+    class Meta:
+        model = File
+        fields = ('id','title',"file",'file_type')
+    
+    def get_file_type(self,obj):
+        return obj.get_file_type_display()
+
+class ProductSerializer(serializers.HyperlinkedModelSerializer):
+    categories = CategorySerializer(many=True)
+    files = FileSerializer(many=True)
+    class Meta:
+        model = Product
+        fields = ('id','title', 'describtion','avatar', 'categories','files','url')
